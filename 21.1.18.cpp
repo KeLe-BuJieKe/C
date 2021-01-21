@@ -273,7 +273,7 @@ void Half_search(int arr[], int len, int X)
 	int j = len - 1;
 	while (i <= j)
 	{
-		int mid = (j + i) / 2;
+		int mid = i+(j-i)/2;
 		if (X > arr[mid])
 		{
 			i = mid + 1;
