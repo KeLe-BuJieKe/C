@@ -5,7 +5,7 @@ typedef struct          	//记录类型
 {
     KeyType key;         	//关键字项
 }RecType;
-
+ 
 //排序的记录类型定义
 //直接插入排序
 void InsertSort(RecType R[], int n)
