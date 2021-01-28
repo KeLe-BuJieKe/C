@@ -160,6 +160,7 @@ arr是一个整形一维数组。*/
 将一个字符串str的内容颠倒过来，并输出。str的长度不超过100个字符。*/
 //#include<stdio.h>
 //#include<string.h>
+//循环方法
 //void print(char* ch)
 //{
 //    int len = strlen(ch);
@@ -168,6 +169,20 @@ arr是一个整形一维数组。*/
 //        printf("%c", ch[i]);
 //
 //    }
+//}
+
+//递归方法
+//void print(char* ch)
+//{
+//	if(*ch!= '\0')
+//	{
+//		print(ch + 1);
+//	}
+//	if (*ch != '\0')
+//	{
+//		printf("%c", *ch);
+//	}
+//	
 //}
 //int main()
 //{
@@ -279,17 +294,37 @@ arr是一个整形一维数组。*/
 
 
 /*10.作业标题:喝汽水问题
-作业内容:喝汽水，1瓶汽水1元，2个空瓶可以换一瓶汽水，给20元，可以多少汽水（编程实现）。*/
+作业内容:喝汽水，1瓶汽水1元，2个空瓶可以换一瓶汽水，给20元，可以喝多少汽水（编程实现）。*/
+//方法一
+//#include<stdio.h>
+//int Drink_soda(int money)
+//{
+//	int sum=money;              //先初始化为money，因为有多少钱就可以喝多少瓶汽水
+//	int empty_bottle= money;    //一开始有多少钱就有多少个空瓶，所以初始为money
+//	while (empty_bottle>1)
+//	{
+//		sum +=empty_bottle/ 2;     //等于每回合空瓶的数量除以2
+//		empty_bottle =empty_bottle/ 2 + empty_bottle% 2;   //--------等于每回合换的汽水数+剩余空瓶
+//	}
+//	return sum;
+//}
+//int main()
+//{
+//	int money;
+//	printf("请输入你有多少钱：");
+//	scanf("%d", &money);
+//	printf("%d", Drink_soda(money));
+//	return 0;
+//}
+// 方法二：按照上述喝水和用瓶子换的规则的话，可以发现，其实就是个等差数列：money*2-1
 //#include<stdio.h>
 //int main()
 //{
 //	int money = 0;
 //	int total = 0;
 //	int empty = 0;
-//
-//
 //	scanf("%d", &money);
-//
+//	//方法2
 //	if (money <= 0)
 //	{
 //		total = 0;
