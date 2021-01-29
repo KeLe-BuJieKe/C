@@ -158,38 +158,49 @@ arr是一个整形一维数组。*/
 
 /*6.问题描述：字符逆序
 将一个字符串str的内容颠倒过来，并输出。str的长度不超过100个字符。*/
+
+//方法一（递归）
 //#include<stdio.h>
 //#include<string.h>
-//循环方法
-//void print(char* ch)
+//void reverse_string(char* arr)
 //{
-//    int len = strlen(ch);
-//    for (int i = len-1; i>=0; i--)
-//    {
-//        printf("%c", ch[i]);
+//	int len = strlen(arr);
+//	char tmp = *arr;
+//	*arr = *(arr + len - 1);
+//	*(arr + len - 1) = '\0';
+//	if (strlen(arr + 1) >= 2)
+//	{
+//		reverse_string(arr + 1);
+//	}
+//	*(arr + len - 1) = tmp;
+//}
 //
+
+
+//方法二（循环）
+//#include<stdio.h>
+//#include<string.h>
+//void reverse_string(char* str)
+//{
+//    int len = strlen(str);
+//    int left = 0, right = len - 1;
+//    while (left < right)
+//    {
+//        char temp = str[left];
+//        str[left] = str[right];
+//        str[right] = temp;
+//        left++;
+//        right--;
 //    }
 //}
-
-//递归方法
-//void print(char* ch)
-//{
-//	if(*ch!= '\0')
-//	{
-//		print(ch + 1);
-//	}
-//	if (*ch != '\0')
-//	{
-//		printf("%c", *ch);
-//	}
-//	
-//}
+//
 //int main()
 //{
-//    char arr[100];
-//    gets(arr);   //gets()读取一行字符串
-//    print(arr);
-//    return 0;
+//	char arr[100];
+//	gets(arr);   //gets()读取一行字符串
+//	reverse_string(arr);
+//	printf("%s", arr);
+//	return 0;
 //}
 
 
@@ -337,4 +348,39 @@ arr是一个整形一维数组。*/
 //
 //
 //	return 0;
+//}
+
+/*11.问题描述：将一个字符串str输出*/
+//#include<stdio.h>
+//#include<string.h>
+//循环方法
+//void print(char* ch)
+//{
+//    int len = strlen(ch);
+//    for (int i = len-1; i>=0; i--)
+//    {
+//        printf("%c", ch[i]);
+//
+//    }
+//}
+
+//递归方法
+//void print(char* ch)
+//{
+//	if(*ch!= '\0')
+//	{
+//		print(ch + 1);
+//	}
+//	if (*ch != '\0')
+//	{
+//		printf("%c", *ch);
+//	}
+//	
+//}
+//int main()
+//{
+//    char arr[100];
+//    gets(arr);   //gets()读取一行字符串
+//    print(arr);
+//    return 0;
 //}
