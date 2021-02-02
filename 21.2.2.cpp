@@ -248,6 +248,7 @@ void bubble_sort(void* base, size_t size, size_t width, int (*cmp)(const void* e
 	for (i = 0; i < size - 1; i++)
 	{
 		size_t j = 0;
+		bool flag = false;
 		for (j = 0; j < size - 1 - i; j++)
 		{
 			//相邻俩个元素的比较
@@ -255,7 +256,12 @@ void bubble_sort(void* base, size_t size, size_t width, int (*cmp)(const void* e
 			{
 				//如果不满足顺序就交换
 				_swap((char*)base + j * width, (char*)base + (j + 1) * width, width);
+				flag = true;
 			}
+		}
+		if (false == flag)
+		{
+			break;
 		}
 	}
 }
