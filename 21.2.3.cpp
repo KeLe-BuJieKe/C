@@ -251,31 +251,61 @@
 //}
 
 
-/*9.作业标题：字符串左旋
-作业内容：实现一个函数，可以左旋字符串中的k个字符。
+
+/* 9.作业标题：字符串左旋 */
+/*作业内容：实现一个函数，可以左旋字符串中的k个字符，k可以大于字符串长度
 例如:
 ABCD左旋一个字符得到BCDA
-ABCD左旋两个字符得到CDAB
-*/
+ABCD左旋两个字符得到CDAB. */
+//#include<stdio.h>
+//#include<string.h>
+//#include<assert.h>
+//char* reverseLeftstr(char* str, int k)
+//{
+//	assert(str != NULL);
+//	int len = (int)strlen(str);
+//	char* temp = (char*)malloc(len + 1);
+//	int pos = k % len;   //断开位置的下标
+//	strcpy(temp, str + pos);
+//	strncat(temp, str, pos);
+//	temp[len] = '\0';
+//	return temp;
+//}
+//int main()
+//{
+//
+//	char* s = "ABCD";
+//	printf("%s", reverseLeftstr(s, 7));
+//
+//	return 0;
+//}
 
+
+//10.问题描述:字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。
+//比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"。
+//如果n大于等于传进去的字符串长度则返回原来的字符串s
 #include<string.h>
 #include<stdio.h>
-#include<stdlib.h>
-char* reverseLeftstr(char* str, int k)
+#include<assert.h>
+char* reverseLeftWords(char* s, int n)
 {
-	int len = strlen(str);
+	assert(s != NULL);
+	int len = (int)strlen(s);
 	char* temp = (char*)malloc(len + 1);
-	int pos = k % len;
-	strcpy(temp, str + pos);
-	strncat(temp, str, pos);
-	temp[len + 1] = '\0';
-	return temp;
+	if (n > 0 && n < len && len>0)
+	{
+		strcpy(temp, s + n);
+		strncat(temp, s, n);
+		temp[len] = '\0';
+		return temp;
+	}
+	return s;
 }
-
 int main()
 {
 
-	printf("%s", reverseLeftstr("ABCD", 2));
+	char* s = "ABCD";
+	printf("%s", reverseLeftWords(s, 8));
 
 	return 0;
 }
