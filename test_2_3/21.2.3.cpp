@@ -268,7 +268,6 @@ ABCD左旋两个字符得到CDAB. */
 //	int pos = k % len;   //断开位置的下标
 //	strcpy(temp, str + pos);
 //	strncat(temp, str, pos);
-//	temp[len] = '\0';
 //	return temp;
 //}
 //int main()
@@ -296,7 +295,6 @@ char* reverseLeftWords(char* s, int n)
 	{
 		strcpy(temp, s + n);
 		strncat(temp, s, n);
-		temp[len] = '\0';
 		return temp;
 	}
 	return s;
