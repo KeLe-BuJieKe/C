@@ -103,6 +103,40 @@
 //}
 
 
+//拓展
+//求出整个斐波那契数列
+//#include<stdio.h>
+//#include<stdlib.h>
+//long long fib(size_t n)
+//{
+//	long long* fibArray =malloc(sizeof(long long) * (n + 1));
+//	fibArray[0] = 0;
+//	if (0 == n)
+//	{
+//		return fibArray;
+//	}
+//	fibArray[1] = 1;
+//	for (int i = 2; i <= n; i++)
+//	{
+//		fibArray[i] = fibArray[i - 1] + fibArray[i - 2];
+//	}
+//	return fibArray;
+//}
+//int main()
+//{
+//	int n;
+//	scanf("%d", &n);
+//	long long*arr=fib(n);
+//	for (int i = 0; i < n; i++)
+//	{
+//		printf("%d ",arr[i] );
+//	}
+//	system("pause");
+//	return 0;
+//}
+
+
+
 /*5.题目描述:根据输入的日期，计算是这一年的第几天。。
 测试用例有多组，注意循环输入
 输入描述:输入多行，每行空格分割，分别是年，月，日
