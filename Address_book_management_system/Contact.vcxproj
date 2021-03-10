@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{D58B93DB-7E38-4935-8102-1D2DC78B415F}</ProjectGuid>
-    <RootNamespace>通讯率管理系统</RootNamespace>
+    <ProjectGuid>{B9F9CF09-8F41-44B3-B931-563C69B69534}</ProjectGuid>
+    <RootNamespace>Contact</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -138,7 +138,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="通讯率管理系统.cpp" />
+    <ClInclude Include="Contact.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Contact.c" />
+    <ClCompile Include="test.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
