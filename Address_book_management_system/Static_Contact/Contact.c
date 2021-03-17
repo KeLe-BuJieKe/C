@@ -39,6 +39,7 @@ void addPerson(struct Addressbooks* Pabs)
 			printf("输入错误，请重现输入\n");
 		}
 
+
 		//年龄
 		printf("请输入年龄: \n");
 		scanf("%d", &Pabs->_data[Pabs->_size]._age);
