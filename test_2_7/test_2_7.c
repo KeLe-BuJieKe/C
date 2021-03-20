@@ -1,5 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 
+
 //#include<stdio.h>
 //#include<stdlib.h>	
 ////声明一个结构体类型
@@ -42,6 +43,13 @@ VS中默认的值为8					Linux中的默认值为4
 //	int a;
 //	char c2;
 //};
+//
+//int main()
+//{
+//	struct S1 s1 = { 0 };
+//	printf("%d\n", sizeof(s1));
+//	return 0;
+//}
 ////练习2
 //struct S2
 //{
@@ -96,8 +104,30 @@ VS中默认的值为8					Linux中的默认值为4
 
 
 
+//#include<stdio.h>
+//#include<stddef.h>
+//struct S
+//{
+//	char c;
+//	int i;
+//	double d;
+//};
+//int main()
+//{
+//	//offsetof----------计算的是结构体成员相对于结构体起始位置偏移量的多少
+//	//offsetof是一个宏，不是函数
+//	//头文件为----------#include<stddef.h>
+//	printf("%d\n",offsetof(struct S, c));
+//	printf("%d\n", offsetof(struct S, i));
+//	printf("%d\n", offsetof(struct S, d));
+//	return 0;
+//}
+
+
+//offsetof模拟实现
 #include<stdio.h>
-#include<stddef.h>
+#define OFFSETOF(struct_name,mem_name) (int)&(((struct_name*)0)->mem_name)
+
 struct S
 {
 	char c;
@@ -106,14 +136,9 @@ struct S
 };
 int main()
 {
-	//offsetof----------计算偏移量是多少
-	//offsetof是一个宏，不是函数
-	//头文件为----------#include<stddef.h>
-	printf("%d\n",offsetof(struct S, c));
-	printf("%d\n", offsetof(struct S, i));
-	printf("%d\n", offsetof(struct S, d));
+	printf("%d\n", OFFSETOF(struct S, c));
+	printf("%d\n", OFFSETOF(struct S, i));
+	printf("%d\n", OFFSETOF(struct S, d));
+
 	return 0;
 }
-
-
-//offsetof模拟实现
