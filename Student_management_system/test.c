@@ -3,7 +3,7 @@ void menu()
 {
 	printf("-------------------------------------\n");
 	printf("-------------学生管理系统------------\n");
-	printf("------1.添加学生    2.删除学生-------\n");
+	printf("------1.添加学生    2.清空学生-------\n");
 	printf("------3.查找学生    4.修改学生-------\n");
 	printf("------5.显示学生    0.退出   --------\n");
 	printf("-------------------------------------\n");
@@ -24,7 +24,6 @@ int main()
 	Student* head = NULL;
 	//初始化
 	
-
 	while (true)
 	{
 		menu();
@@ -37,10 +36,10 @@ int main()
 			AddStudent(&head);
 			break;
 		case _Delete_:
-			DeleteStudent(&head);
+			DestoryStudent(&head);
 			break;
 		case _Search_:
-			SearchStudent(&head);
+			show_SingleStudent(SearchStudent(&head));
 			break;
 		case _Modify_:
 			ModifyStudent(&head);
@@ -49,6 +48,7 @@ int main()
 			ShowStudent(&head);
 			break;
 		case _Exit_:
+			DestoryStudent(&head);
 			printf("已退出，欢迎下次使用\n");
 			exit(0);
 		default :

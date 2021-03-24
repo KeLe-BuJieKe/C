@@ -30,8 +30,12 @@ void AddStudent(Student**pps);
 //显示学生
 void ShowStudent(const Student** pps);
 
-//删除学生
-void DeleteStudent(Student** pps);
+//判断该学生是否存在
+Student* is_Exist(Student** pps, char  name[]);
+
+
+//显示查找到的了人的信息
+void show_SingleStudent(const Student* pps);
 
 //查找
 Student* SearchStudent(Student** pps);
