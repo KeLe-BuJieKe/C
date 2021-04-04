@@ -91,4 +91,21 @@ int* singleNumbers(int* nums, int numsSize, int* returnSize)
 输出：1
 链接：https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-ii-lcof/
 */
-
+int cmp_int(const void* e1, const void* e2)
+{
+    return (*(int*)e1) - (*(int*)e2);
+}
+int singleNumber(int* nums, int numsSize)
+{
+    qsort(nums, numsSize, sizeof(int), cmp_int);
+    for (int i = 0; i < numsSize - 2; i += 3)
+    {
+        // 三个里面都要相等，一旦不符合该规则就结束
+        if (nums[i] != nums[i + 2])
+        {
+            return nums[i];
+        }
+    }
+    //当最后一个元素是只出现一次的情况
+    return nums[numsSize - 1];
+}
