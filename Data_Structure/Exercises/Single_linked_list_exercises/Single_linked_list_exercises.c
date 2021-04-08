@@ -108,29 +108,16 @@ struct ListNode* reverseList(struct ListNode* head)
 /*头插迭代：具体思路就是，取cur头插到以newhead为头的新链表中
 struct ListNode* reverseList(struct ListNode* head)
 {
-    //当穿进来的是空指针，或者只有一个元素的时候
-    //不需要逆置
-    if(head==NULL||head->next==NULL)
-    {
-        return head;
-    }
 
     struct ListNode*cur=head;
-    struct ListNode*next=head->next;
     struct ListNode*newhead=NULL;
 
     while(cur!=NULL)
     {
-        //头插
+        struct ListNode*next=cur->next;
         cur->next=newhead;
         newhead=cur;
-
-
         cur=next;
-        if(next!=NULL)
-        {
-            next=next->next;
-        }
     }
     return newhead;
 }
