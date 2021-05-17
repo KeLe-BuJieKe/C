@@ -1,6 +1,9 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #include<iostream>
 using  namespace std;
+#define _CRT_SECURE_NO_WARNINGS 1
+#include<iostream>
+using  namespace std;
 /*
 912. 排序数组
 给你一个整数数组 nums，请你将该数组升序排列。
@@ -14,6 +17,7 @@ using  namespace std;
 提示：
 1 <= nums.length <= 50000
 -50000 <= nums[i] <= 50000
+链接：https://leetcode-cn.com/problems/sort-an-array/
 */
 
 /*
@@ -99,5 +103,45 @@ int* sortArray(int* nums, int numsSize, int* returnSize)
     memcpy(array,nums,sizeof(int)*numsSize);
     *returnSize=numsSize;
     return nums;
+}
+
+
+//方法二：希尔排序
+void shellSort(int*array,int size)
+{
+    int gap=size;
+    while(gap>1)
+    {
+        gap=gap/3+1;
+        for(int i=0;i<size-gap;i++)
+        {
+            int end=i;
+            int temp=array[end+gap];
+            while(end>=0)
+            {
+                if(array[end]>temp)
+                {
+                    array[end+gap]= array[end];
+                    end-=gap;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            array[end+gap]=temp;
+        }
+
+    }
+
+}
+
+int* sortArray(int* nums, int numsSize, int* returnSize)
+{
+    *returnSize=numsSize;
+    int *array=(int*)malloc(sizeof(int)*numsSize);
+    shellSort(nums,numsSize);
+    memcpy(array,nums,sizeof(int)*numsSize);
+    return array;
 }
 */
