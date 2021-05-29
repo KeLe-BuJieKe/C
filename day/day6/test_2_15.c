@@ -31,7 +31,6 @@
 
 
 
-
 //下面程序指向后输出的结果是
 //#include<stdio.h>
 //int f(int a)
