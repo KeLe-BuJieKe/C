@@ -100,7 +100,6 @@ struct ListNode* reverseList(struct ListNode* head)
         cur->next=newhead;
         newhead=cur;
 
-
         cur=next;
         if(next!=NULL)
         {
