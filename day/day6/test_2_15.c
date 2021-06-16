@@ -1,6 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 
-
 //1.以下程序的运行结果是
 //#include<stdio.h>
 //int fun(int a, int b)
