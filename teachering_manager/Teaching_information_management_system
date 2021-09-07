@@ -1,0 +1,1295 @@
+#define _CRT_SECURE_NO_WARNINGS 1
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+ struct Teacher
+{
+	int teacherId;	//教师号
+	char teacherName[20];	//姓名
+	char sex[10];	//性别
+	char education[20];	//学历
+	int age;	//年龄
+	char phone[20]; //电话
+	int flag;	//删除的标志
+}teacher[100];	//存储教师信息的数组
+
+
+struct Course		//课程
+{
+	int courseID;		//课程号
+	char courseName[20];	//课程名称
+	int flag;	//删除的标志
+}course[100];
+
+ struct Tc
+{
+	int tcId;	//教课号
+	char openingTime[20];	//开课时间
+	char teacherId[20];		//教师号
+	char courseId[20];	//课程号
+	int flag;	//删除的标志
+}tc[100];
+
+ struct Student
+{
+	int studentId;	//学号
+	char studentName[20];	//姓名
+	int flag;	//删除的标志
+}student[100];
+
+struct Sc
+{
+	int scId;	//学课号
+	char Id[20];		//学号
+	char classNumber[20];		//教课号
+	int flag;	//删除的标志
+}sc[100];
+
+int T_num=0;	//教师数量
+int S_num=0;	//学生数量
+int Tc_num = 0;	//课程与老师数量
+int Sc_num = 0;	//学生与课程数量
+int C_num = 0;	//课程数量
+
+void t_save();
+void t_read();
+void s_save();
+void s_read();
+void tc_save();
+void tc_read();
+void sc_save();
+void sc_read();
+void c_save();
+void c_read();
+
+void mainmenu();	//菜单
+
+void addmenu();		
+void addTeacher();	//添加教师信息
+void addCourse();	//添加课程信息
+void addTc();		//添加教师与课程关联信息
+void addStudent();	//添加学生信息
+void addSc();		//学生与课程关联信息的
+
+void searchmenu();
+void searchTc_menu();
+void searchTc_tcId();
+void serachTc_openingTime();
+void serachTc_teacherId();
+void serachTc_courseId();
+
+void serachSc_menu();
+void serachSc_scId();	
+void serachSc_Id();
+void serachSc_classNumber();
+
+int get_T_teacherId(int id);
+int get_C_CourseId(int id);
+int get_Tc_tcId(int tcId);
+int get_S_studentId(int studentId);
+int get_Sc_scId(int scId);
+
+void modifiedmenu();
+void modifiedTeacher();	//修改除教师号外的教师的其他信息
+void modifiedCourse();	//修改除课程号外的课程的其他信息 
+void modifiedTc();		//修改除教课号外的教师与课程关联信息的其他信息
+void modifiedStudent();	//修改除学号外的学生的其他信息的修改
+void modifiedSc();		//修改除学课号外的学生与课程关联信息的其他信息
+
+void erasemenu();
+void eraseTeacher();	//删除教师
+void eraseCourse();		//删除课程
+void eraseTc();			//删除课程教师与课程关联信息
+void eraseStudent();	//删除学生
+void eraseSc();			//删除学生与课程关联信息
+
+void showmenu();
+void showTeacher();
+void showStudent();
+void showCourse();
+void showTc();
+void showSc();
+
+int main()
+{
+	t_read();
+	c_read();
+	s_read();
+	tc_read();
+	sc_read();
+	mainmenu();
+	return 0;
+}
+
+void mainmenu()
+{
+	while (1)
+	{
+		printf("1、添加信息\n");
+		printf("2、删除信息\n");
+		printf("3、查找信息\n");
+		printf("4、修改信息\n");
+		printf("5、显示信息\n");
+		printf("0、退出\n");
+		int select;
+		scanf("%d", &select);
+		switch (select)
+		{
+		case 1:
+			addmenu();
+			break;
+		case 2:
+			erasemenu();
+			break;
+		case 3:
+			searchmenu();
+			break;
+		case 4:
+			modifiedmenu();
+			break;
+		case 5:
+			showmenu();
+			break;
+		case 0:
+			printf("您已退出\n");
+			return;
+		default:
+			printf("请输入正确的指令\n");
+		}
+		system("pause");
+		system("cls");
+	}
+
+}
+
+void addmenu()
+{
+
+	while (1)
+	{
+		system("pause");
+		system("cls");
+		printf("1.添加教师\n");
+		printf("2.添加课程\n");
+		printf("3.添加教师与课程关联信息\n");
+		printf("4.添加学生\n");
+		printf("5.学生与课程关联信息\n");
+		printf("0.返回\n");
+
+		int select;
+		scanf("%d", &select);
+		switch (select)
+		{
+		case 1:
+			addTeacher();
+			break;
+		case 2:
+			addCourse();
+			break;
+		case 3:
+			addTc();
+			break;
+		case 4:
+			addStudent();
+			break;
+		case 5:
+			addSc();
+			break;
+		case 0:
+			printf("已返回\n");
+			return;
+		default:
+			printf("选择错误,请重新选择\n");
+		}
+	}
+
+}
+
+void addTeacher()
+{
+
+	if (T_num >= 100)
+	{
+		printf("已满，添加失败\n");
+		system("pause");
+		system("cls");
+		return;
+	}
+	while (1)
+	{
+		printf("请输入教师号\n");
+		scanf("%d", &teacher[T_num].teacherId);
+		if (teacher[T_num].teacherId > 1)
+		{
+			break;
+		}
+		else
+		{
+			printf("教师号需是大于1的正整数\n");
+			printf("按任意键重新输入\n");
+			system("pause");
+			system("cls");
+		}
+	}
+	printf("请输入姓名\n");
+	scanf("%s", teacher[T_num].teacherName);
+	printf("请输入性别\n");
+	scanf("%s", teacher[T_num].sex);
+	printf("请输入学历\n");
+	scanf("%s", teacher[T_num].education);
+	printf("请输入年龄\n");
+	scanf("%d", &teacher[T_num].age);
+	printf("请输入电话\n");
+	scanf("%s", teacher[T_num].phone);
+	teacher[T_num].flag = 0;
+	++T_num;
+	t_save();
+	printf("添加成功\n");
+}
+
+void addCourse()
+{
+	if (C_num >= 100)
+	{
+		printf("已满，添加失败\n");
+		system("pause");
+		system("cls");
+		return;
+	}
+	while (1)
+	{
+		printf("请输入课程号\n");
+		scanf("%d", &course[C_num].courseID);
+		if (course[C_num].courseID > 1)
+		{
+			break;
+		}
+		else
+		{
+			printf("课程号需是大于1的正整数\n");
+			printf("按任意键重新输入\n");
+			system("pause");
+			system("cls");
+		}
+	}
+	
+	printf("请输入课程名称\n");
+	scanf("%s", course[C_num].courseName);
+	course[C_num].flag = 0;
+	++C_num;
+	c_save();
+	printf("添加成功\n");
+	system("pause");
+	system("cls");
+}
+
+void addTc()
+{
+	if (Tc_num >= 100)
+	{
+		printf("已满，添加失败\n");
+		system("pause");
+		system("cls");
+		return;
+	}
+	while (1)
+	{
+		printf("请输入教课号\n");
+		scanf("%d", &tc[Tc_num].tcId);
+		if (tc[Tc_num].tcId > 1)	//大于1的正整数
+		{
+			break;
+		}
+		else
+		{
+			printf("教课号需是大于1的正整数\n");
+			printf("按任意键重新输入\n");
+			system("pause");
+			system("cls");
+		}
+	}
+
+	printf("请输入开课时间\n");
+	scanf("%s", tc[Tc_num].openingTime);
+	printf("请输入教师号\n");
+	scanf("%s", tc[Tc_num].teacherId);
+	printf("请输入课程号\n");
+	scanf("%s", tc[Tc_num].courseId);
+	tc[Tc_num].flag = 0;
+	++Tc_num;
+	tc_save();
+	printf("添加成功\n");
+	system("pause");
+	system("cls");
+}
+
+void addStudent()
+{
+	if (S_num >= 100)
+	{
+		printf("已满，添加失败\n");
+		system("pause");
+		system("cls");
+		return;
+	}
+
+	while (1)
+	{
+		printf("请输入学号\n");
+		scanf("%d", &student[S_num].studentId);
+		if (student[S_num].studentId > 1)
+		{
+			break;
+		}
+		else
+		{
+			printf("学号需是大于1的正整数\n");	
+			printf("按任意键重新输入\n");
+			system("pause");
+			system("cls");
+		}
+	}
+	printf("请输入姓名\n");
+	scanf("%s", student[S_num].studentName);
+	student[S_num].flag = 0;
+	++S_num;
+	s_save();
+	printf("添加成功\n");
+	system("pause");
+	system("cls");
+}
+
+void addSc()
+{
+	if (Sc_num >= 100)
+	{
+		printf("已满，添加失败\n");
+		system("pause");
+		system("cls");
+		return;
+	}
+
+	while (1)
+	{
+		printf("请输入学课号\n");
+		scanf("%d", &sc[Sc_num].scId);
+		if (sc[Sc_num].scId > 1)
+		{
+			break;
+		}
+		else
+		{
+			printf("学课号需是大于1的正整数\n");
+		}
+	}
+
+	printf("请输入学号\n");
+	scanf("%s", sc[Sc_num].Id);
+	printf("请输入教课号\n");
+	scanf("%s", sc[Sc_num].classNumber);
+	sc[Sc_num].flag = 0;
+	++Sc_num;
+	sc_save();
+	printf("添加成功\n");
+	system("pause");
+	system("cls");
+}
+
+void searchmenu()
+{
+	while (1)
+	{
+		system("pause");
+		system("cls");
+		printf("1、查找教师与课程相关联信息\n");
+		printf("2、查找学生与课程相关联信息\n");
+		printf("0、返回\n");
+		int select;
+		scanf("%d", &select);
+		switch (select)
+		{
+		case 1:
+			searchTc_menu();
+			break;
+		case 2:
+			serachSc_menu();
+			break;
+		case 0:
+			return;
+		default:
+			printf("请输入正确的指令\n");
+		}
+	}
+}
+
+void searchTc_menu()
+{
+	while (1)
+	{
+		printf("1、按教课号查询\n");
+		printf("2、按开课时间查询\n");
+		printf("3、按教师号查询\n");
+		printf("4、按课程号查询\n");
+		printf("0、返回\n");
+		int select;
+		scanf("%d", &select);
+		switch (select)
+		{
+		case 1:
+			searchTc_tcId();
+			break;
+		case 2:
+			serachTc_openingTime();
+			break;
+		case 3:
+			serachTc_teacherId();
+			break;
+		case 4:
+			serachTc_courseId();
+			break;
+		case 0:
+			return;
+		default:
+			printf("请输入正确的指令\n");
+		}
+		printf("\n");
+		system("pause");
+		system("cls");
+		
+	}
+}
+
+void searchTc_tcId()
+{
+	printf("请输入教课号\n");
+	int no;
+	scanf("%d", &no);
+	int index = get_Tc_tcId(no);
+	if (index == -1|| tc[index].flag==1)
+	{
+		printf("无该教课号对应的教师\n");
+	}
+	else
+	{
+		printf("教课号：%d 开学时间：%s 教师号：%s 课程号：%s",tc[index].tcId,tc[index].openingTime,
+			tc[index].teacherId,tc[index].courseId);
+	}
+}
+
+void serachTc_openingTime()
+{
+	printf("请输入开课时间(形式如：2021101)\n");
+	char opentime[20];
+	scanf("%s", opentime);
+	int i = 0;
+	int flag = 0;
+	for (; i < Tc_num; ++i)
+	{
+		if (strcmp(tc[i].openingTime, opentime) == 0&& tc[i].flag == 0)
+		{
+			printf("教课号：%d 开学时间：%s 教师号：%s 课程号：%s", tc[i].tcId, tc[i].openingTime,
+				tc[i].teacherId, tc[i].courseId);
+			flag = 1;
+		}
+	}
+	if (flag == 0)
+	{
+		printf("查无该开课时间的信息\n");
+	}
+}
+
+void serachTc_teacherId()
+{
+	printf("请输入教师号\n");
+	char teacherId[20];
+	scanf("%s", teacherId);
+	int i = 0;
+	int flag = 0;
+	for (; i < Tc_num; ++i)
+	{
+		if (strcmp(tc[i].teacherId, teacherId) == 0&& tc[i].flag == 0)
+		{
+			printf("教课号：%d 开学时间：%s 教师号：%s 课程号：%s", tc[i].tcId, tc[i].openingTime,
+				tc[i].teacherId, tc[i].courseId);
+			flag = 1;
+		}
+	}
+	if (flag == 0)
+	{
+		printf("查无该教师号的信息\n");
+	}
+}
+
+void serachTc_courseId()
+{
+	printf("请输入课程号\n");
+	char courseId[20];
+	scanf("%s", courseId);
+	int i = 0;
+	int flag = 0;
+	for (; i < Tc_num; ++i)
+	{
+		if (strcmp(tc[i].courseId, courseId) == 0&& tc[i].flag == 0)
+		{
+			printf("教课号：%d 开学时间：%s 教师号：%s 课程号：%s", tc[i].tcId, tc[i].openingTime,
+				tc[i].teacherId, tc[i].courseId);
+			flag = 1;
+		}
+	}
+	if (flag == 0)
+	{
+		printf("查无该课程号的信息\n");
+	}
+}
+
+
+void serachSc_menu()
+{
+	while (1)
+	{
+		printf("1、按学课号查询\n");
+		printf("2、按学号查询\n");
+		printf("3、按教课号查询\n");
+		printf("0、退出\n");
+		int select;
+		scanf("%d", &select);
+		switch (select)
+		{
+		case 1:
+			serachSc_scId();
+			break;
+		case 2:
+			serachSc_Id();
+			break;
+		case 3:
+			serachSc_classNumber();
+			break;
+		case 0:
+			printf("您已退出\n");
+			return;
+		default:
+			printf("请输入正确的指令\n");
+		}
+		system("pause");
+		system("cls");
+
+	}
+}
+
+void serachSc_scId()
+{
+	printf("请输入学课号\n");
+	int scId;
+	scanf("%d", &scId);
+	int index = get_Sc_scId(scId);
+	if (index == -1|| sc[index].flag==1)
+	{
+		printf("无该学课号对应的学生\n");
+	}
+	else
+	{
+		printf("学课号：%d  学号：%s 教课号：%s \n", sc[index].scId, sc[index].Id, sc[index].classNumber);
+	}
+}
+
+void serachSc_Id()
+{
+	printf("请输入学号\n");
+	char Id[20];
+	scanf("%s", Id);
+	int i = 0;
+	int flag = 0;
+	for (; i < Sc_num; ++i)
+	{
+		if (strcmp(sc[i].Id ,Id)==0&& sc[i].flag==0)
+		{
+			printf("学课号：%d  学号：%s 教课号：%s", sc[i].scId, sc[i].Id, sc[i].classNumber);
+			flag = 1;
+		}
+	}
+	if (flag == 0)
+	{
+		printf("查无该学号的信息\n");
+	}
+}
+
+void serachSc_classNumber()
+{
+	printf("请输入教课号\n");
+	char classNumberd[20];
+	scanf("%s", classNumberd);
+	int i = 0;
+	int flag = 0;
+	for (; i < Sc_num; ++i)
+	{
+		if (strcmp(sc[i].classNumber, classNumberd) == 0&& sc[i].flag == 0)
+		{
+			printf("学课号：%d  学号：%s 教课号：%s", sc[i].scId, sc[i].Id, sc[i].classNumber);
+			flag = 1;
+		}
+	}
+	if (flag == 0)
+	{
+		printf("查无该教课号的信息\n");
+	}
+}
+
+int get_T_teacherId(int id)
+{
+	for (int i = 0; i < T_num; i++)
+	{
+		if ((teacher[i].teacherId == id)&& (teacher[i].flag == 0))
+			return i;
+	}
+	return -1;
+}
+
+int get_C_CourseId(int id)
+{
+	for (int i = 0; i < C_num; i++)
+	{
+		if (course[i].courseID == id&&course[i].flag == 0)
+			return i;
+	}
+	return -1;
+}
+
+int get_Tc_tcId(int tcId)
+{
+	for (int i = 0; i < Tc_num; i++)
+	{
+		if (tc[i].tcId == tcId && tc[i].flag == 0)
+			return i;
+	}
+
+	return -1;
+}
+
+int get_S_studentId(int studentId)
+{
+	for (int i = 0; i < S_num; i++)
+	{
+		if (student[i].studentId ==studentId&& student[i].flag==0)
+			return i;
+	}
+	return -1;
+}
+
+int get_Sc_scId(int scId)
+{
+	for (int i = 0; i < Sc_num; i++)
+	{
+		if (sc[i].scId == scId&& sc[i].flag==0)
+			return i;
+	}
+	return -1;
+}
+
+void modifiedmenu()
+{
+	system("pause");
+	system("cls");
+	while (1)
+	{
+		printf("1、修改除教师号外的教师的其他信息\n");
+		printf("2、修改除课程号外的课程的其他信息\n");
+		printf("3、修改除教课号外的教师与课程关联信息的其他信息\n");
+		printf("4、修改除学号外的学生的其他信息的修改\n");
+		printf("5、修改除学课号外的学生与课程关联信息的其他信息\n");
+		printf("0、返回\n");
+		int select;
+		scanf("%d", &select);
+		switch (select)
+		{
+		case 1:
+			modifiedTeacher();
+			break;
+		case 2:
+			modifiedCourse();
+			break;
+		case 3:
+			modifiedTc();
+			break;
+		case 4:
+			modifiedStudent();
+			break;
+		case 5:
+			modifiedSc();
+			break;
+		case 0:
+			printf("您已退出\n");
+			return;
+		default:
+			printf("请输入正确的指令\n");
+
+		}
+	}
+	system("pause");
+	system("cls");
+}
+
+void modifiedTeacher()
+{
+	printf("请输入要修改的教师号：\n");
+	int id;
+	scanf("%d", &id);
+	int index = get_T_teacherId(id);
+	if (index == -1)
+	{
+		printf("查无该教师!\n");
+	}
+	else
+	{
+		printf("请输入姓名\n");
+		scanf("%s", teacher[index].teacherName);
+		printf("请输入性别\n");
+		scanf("%s", teacher[index].sex);
+		printf("请输入学历\n");
+		scanf("%s", teacher[index].education);
+		printf("请输入年龄\n");
+		scanf("%d", &teacher[index].age);
+		printf("请输入电话\n");
+		scanf("%s", teacher[index].phone);
+		t_save();
+		printf("修改成功！\n");
+	}
+	system("pause");
+	system("cls");
+}
+
+void modifiedCourse()
+{
+
+	printf("请输入要修改的课程号：\n");
+	int id;
+	scanf("%d", &id);
+	int index = get_C_CourseId(id);
+	if (index == -1)
+	{
+		printf("查无该课程!\n");
+	}
+	else
+	{
+		printf("请输入课程名称\n");
+		scanf("%s", course[index].courseName);
+		c_save();
+		printf("修改成功！\n");
+	}
+	system("pause");
+	system("cls");
+}
+
+void modifiedTc()
+{
+	printf("请输入要修改的教课号：\n");
+	int id;
+	scanf("%d", &id);
+	int index = get_Tc_tcId(id);
+	if (index == -1)
+	{
+		printf("查无该课程关联信息!\n");
+	}
+	else
+	{
+		printf("请输入开课时间\n");
+		scanf("%s", tc[index].openingTime);
+		printf("请输入教师号\n");
+		scanf("%s", tc[index].teacherId);
+		printf("请输入课程号\n");
+		scanf("%s", tc[index].courseId);
+		tc_save();
+		printf("修改成功！\n");
+	}
+	system("pause");
+	system("cls");
+}
+
+void modifiedStudent()
+{
+	printf("请输入要修改的学号：\n");
+	int id;
+	scanf("%d", &id);
+	int index = get_S_studentId(id);
+	if (index == -1)
+	{
+		printf("查无该学生信息!\n");
+	}
+	else
+	{
+		printf("请输入姓名\n");
+		scanf("%s", student[index].studentName);
+		s_save();
+		printf("修改成功！\n");
+	}
+	system("pause");
+	system("cls");
+}
+
+void modifiedSc()
+{
+	printf("请输入要修改的学课号：\n");
+	int id;
+	scanf("%d", &id);
+	int index = get_Sc_scId(id);
+	if (index == -1)
+	{
+		printf("查无该学生信息!\n");
+	}
+	else
+	{
+		printf("请输入学号\n");
+		scanf("%s", sc[index].Id);
+		printf("请输入教课号\n");
+		scanf("%s", sc[index].classNumber);
+		sc_save();
+		printf("修改成功！\n");
+	}
+	system("pause");
+	system("cls");
+}
+
+void erasemenu()
+{
+	system("pause");
+	system("cls");
+	while (1)
+	{
+		printf("1、删除教师\n");
+		printf("2、删除课程\n");
+		printf("3、删除课程教师与课程关联信息\n");
+		printf("4、删除学生\n");
+		printf("5、删除学生与课程关联信息\n");
+		printf("0、返回\n");
+		int select;
+		scanf("%d", &select);
+		switch (select)
+		{
+		case 1:
+			eraseTeacher();
+			break;
+		case 2:
+			eraseCourse();
+			break;
+		case 3:
+			eraseTc();
+			break;
+		case 4:
+			eraseStudent();
+			break;
+		case 5:
+			eraseSc();
+			break;
+		case 0:
+			printf("您已退出\n");
+			return;
+		default:
+			printf("请输入正确的指令\n");
+		}
+		system("pause");
+		system("cls");
+	}
+}
+
+void eraseTeacher()
+{
+	printf("请输入要删除的教师号：\n");
+	int id;	//teacherId
+	scanf("%d", &id);
+	int index = get_T_teacherId(id);
+	if (index == -1)
+	{
+		printf("查无该教师!\n");
+	}
+	else
+	{
+		teacher[index].flag = 1;
+		t_save();
+		printf("删除成功！\n");
+	}
+	system("pause");
+	system("cls");
+}
+
+void eraseCourse()
+{
+	printf("请输入要删除的课程号：\n");
+	int id;		//courseID		课程号
+	scanf("%d", &id);
+	int index = get_C_CourseId(id);
+	if (index == -1)
+	{
+		printf("查无该课程!\n");
+	}
+	else
+	{
+		course[index].flag = 1;
+		c_save();
+		printf("删除成功！\n");
+	}
+}
+
+void eraseTc()
+{
+	printf("请输入要修改的教课号：\n");
+	int id;
+	scanf("%d", &id);	// tcId 教课号
+	int index = get_Tc_tcId(id);
+	if (index == -1)
+	{
+		printf("查无该课程关联信息!\n");
+	}
+	else 
+	{
+		tc[index].flag = 1;
+		tc_save();
+		printf("删除成功！\n");
+	}
+}
+
+void eraseStudent()
+{
+	printf("请输入要删除的学号：\n");
+	int id;	//studentId  学号
+	scanf("%d", &id);
+	int index = get_S_studentId(id);
+	if (index == -1)
+	{
+		printf("查无该学生信息!\n");
+	}
+	else
+	{
+		student[index].flag = 1;
+		s_save();
+		printf("删除成功\n");
+	}
+	system("pause");
+	system("cls");
+}
+
+void eraseSc()
+{
+	printf("请输入要删除的学课号\n");
+	int id;		//scId	学课号
+	scanf("%d", &id);
+	int index = get_Sc_scId(id);
+	if (index == -1)
+	{
+		printf("查无该学生信息!\n");
+	}
+	else
+	{
+		sc[index].flag=1;	
+		sc_save();
+		printf("删除成功\n");
+	}
+	system("pause");
+	system("cls");
+}
+
+void showmenu()
+{
+	system("pause");
+	system("cls");
+	while (1)
+	{
+		printf("1、显示所有教师\n");
+		printf("2、显示所有课程\n");
+		printf("3、显示所有课程教师与课程关联信息\n");
+		printf("4、显示所有学生\n");
+		printf("5、显示所有学生与课程关联信息\n");
+		printf("0、返回\n");
+		int select;
+		scanf("%d", &select);
+		switch (select)
+		{
+		case 1:
+			showTeacher();
+			break;
+		case 2:
+			showCourse();
+			break;
+		case 3:
+			showTc();
+			break;
+		case 4:
+			showStudent();
+			break;
+		case 5:
+			showSc();
+			break;
+		case 0:
+			return;
+		default:
+			printf("请输入正确的指令\n");
+		}
+		system("pause");
+		system("cls");
+	}
+}
+
+void showTeacher()
+{
+	int i = 0;
+	for (; i < T_num; ++i)
+	{
+		if (teacher[i].flag == 0)
+		{
+			printf("教师号：%d 姓名：%s 性别：%s 学历：%s 年龄：%d 电话：%s\n", teacher[i].teacherId, teacher[i].teacherName,
+				teacher[i].sex, teacher[i].education, teacher[i].age, teacher[i].phone);
+		}
+	}
+}
+
+void showStudent()
+{
+	int i = 0;
+	for (; i < S_num; ++i)
+	{
+		if (student[i].flag == 0)
+		{
+			printf("学号：%d 姓名：%s \n", student[i].studentId, student[i].studentName);
+
+		}
+	}
+}
+
+void showCourse()
+{
+	int i = 0;
+	for (; i < C_num; ++i)
+	{
+		if (course[i].flag==0)
+		{
+			printf("课程号：%d 课程名称：%s \n", course[i].courseID, course[i].courseName);
+
+		}
+	}
+}
+
+void showTc()
+{
+	int i = 0;
+	for (; i < Tc_num; ++i)
+	{
+		if (tc[i].flag == 0)
+		{
+			printf("教课号：%d 开课时间：%s 教师号：%s 课程号：%s \n", tc[i].tcId, tc[i].openingTime, tc[i].teacherId, tc[i].courseId);
+		}
+	}
+}
+
+void showSc()
+{
+	int i = 0;
+	for (; i < Sc_num; ++i)
+	{
+		if (sc[i].flag == 0)
+		{
+			printf("学课号：%d 学号：%s 课程号：%s \n", sc[i].scId, sc[i].Id, sc[i].classNumber);
+		}
+	}
+}
+
+void t_save()
+{
+	FILE* fp;
+	int i = 0;
+	if ((fp = fopen("t.txt", "w")) == NULL)
+	{
+		printf("文件打开失败！\n");
+		return;
+	}
+	else
+	{
+		for (i = 0; i < T_num; i++)
+			fprintf(fp, "%d %s %s %s %d %s %d\n", teacher[i].teacherId, teacher[i].teacherName,
+				teacher[i].sex, teacher[i].education, teacher[i].age, teacher[i].phone, teacher[i].flag);
+	}
+	fclose(fp);
+
+}
+
+void t_read()
+{
+	FILE* fp;
+	int i = 0;
+	if ((fp = fopen("t.txt", "r")) == NULL)
+	{
+		printf("文件打开失败！\n");
+		return;
+	}
+	else
+	{
+		for (i = 0; !feof(fp); i++)
+		{
+			fscanf(fp, "%d %s %s %s %d %s %d\n", &teacher[i].teacherId, teacher[i].teacherName,
+				teacher[i].sex, teacher[i].education, &teacher[i].age, teacher[i].phone, &teacher[i].flag);
+			T_num++;
+		}
+	}
+
+	fclose(fp);
+}
+
+void s_save()
+{
+	FILE* fp;
+	int i = 0;
+	if ((fp = fopen("s.txt", "w")) == NULL)
+	{
+		printf("文件打开失败！\n");
+		return;
+	}
+	else
+	{
+		for (i = 0; i < S_num; i++)
+		{
+			fprintf(fp, "%d %s %d\n", student[i].studentId, student[i].studentName, student[i].flag);
+		}
+	}
+	fclose(fp);
+}
+
+void s_read()
+{
+	FILE* fp;
+	int i = 0;
+	if ((fp = fopen("s.txt", "r")) == NULL)
+	{
+		printf("文件打开失败！\n");
+		return;
+	}
+	else
+	{
+		for (i = 0; !feof(fp); i++)
+		{
+			fscanf(fp, "%d %s %d\n", &student[i].studentId, student[i].studentName, &student[i].flag);
+			S_num++;
+		}
+	}
+	fclose(fp);
+}
+
+void tc_save()
+{
+	FILE* fp;
+	int i = 0;
+	if ((fp = fopen("TC.txt", "w")) == NULL)
+	{
+		printf("文件打开失败！\n");
+		return;
+	}
+	else
+	{
+		for (i = 0; i < Tc_num; i++)
+			fprintf(fp, "%d %s %s %s %d\n", tc[i].tcId, tc[i].openingTime, tc[i].teacherId, tc[i].courseId,tc[i].flag);
+	}
+	fclose(fp);
+
+}
+
+void tc_read()
+{
+	FILE* fp;
+	int i = 0;
+	if ((fp = fopen("TC.txt", "r")) == NULL)
+	{
+		printf("文件打开失败！\n");
+		return;
+	}
+	else
+	{
+		for (i = 0; !feof(fp); i++)
+		{
+			fscanf(fp, "%d %s %s %s %d\n", &tc[i].tcId, tc[i].openingTime, tc[i].teacherId, tc[i].courseId,&tc[i].flag);
+			Tc_num++;
+		}
+	}
+
+	fclose(fp);
+
+}
+
+void sc_save()
+{
+	FILE* fp;
+	int i = 0;
+	if ((fp = fopen("sC.txt", "w")) == NULL)
+	{
+		printf("文件打开失败！\n");
+		return;
+	}
+	else
+	{
+		for (i = 0; i < Sc_num; i++)
+		{
+			fprintf(fp, "%d %s %s %d\n", sc[i].scId, sc[i].Id, sc[i].classNumber,sc[i].flag);
+		}
+	}
+	fclose(fp);
+}
+
+void sc_read()
+{
+	FILE* fp;
+	int i = 0;
+	if ((fp = fopen("sc.txt", "r")) == NULL)
+	{
+		printf("文件打开失败！\n");
+		return;
+	}
+	else
+	{
+		for (i = 0; !feof(fp); i++)
+		{
+			fscanf(fp, "%d %s %s %d\n", &sc[i].scId, sc[i].Id, sc[i].classNumber,&sc[i].flag);
+			Sc_num++;
+		}
+	}
+	if (Sc_num > 0)
+	{
+		Sc_num -= 1;
+	}
+	fclose(fp);
+}
+
+void c_save()
+{
+	FILE* fp;
+	int i = 0;
+	if ((fp = fopen("C.txt", "w")) == NULL)
+	{
+		printf("文件打开失败！\n");
+		return;
+	}
+	else
+	{
+		for (i = 0; i < C_num; i++)
+		{
+			fprintf(fp, "%d %s %d\n", course[i].courseID, course[i].courseName, course[i].flag);
+		}
+	}
+	fclose(fp);
+}
+
+void c_read()
+{
+	FILE* fp;
+	int i = 0;
+	if ((fp = fopen("C.txt", "r")) == NULL)
+	{
+		printf("文件打开失败！\n");
+		return;
+	}
+	else
+	{
+		for (i = 0; !feof(fp); i++)
+		{
+			fscanf(fp, "%d %s %d\n", &course[i].courseID, course[i].courseName, &course[i].flag);
+			C_num++;
+		}
+
+	}
+
+	fclose(fp);
+}
