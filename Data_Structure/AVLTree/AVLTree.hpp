@@ -315,31 +315,31 @@ public:
 		_Inorder(m_root);
 		cout << endl;
 	}
-  bool find(const pair<K,V>&kv )
-  {
-     if(m_root==nullptr)
-     {
+    bool find(const pair<K,V>&kv )
+    {
+       if(m_root==nullptr)
+       {
+          return false;
+       }
+
+       node*cur=m_root;
+       while(cur!=nullptr)
+       {
+          if(cur->m_kv.first<kv.first)
+          {
+            cur=cur->m_right;
+          }
+          else if(cur->m_kv.first>kv.first)
+          {
+            cur=cur->m_left;
+          }
+          else
+          {
+            return true;
+          }
+       }
        return false;
      }
-
-     node*cur=m_root;
-     while(cur!=nullptr)
-     {
-        if(cur->m_kv.first<kv.first)
-        {
-          cur=cur->m_right;
-        }
-        else if(cur->m_kv.first>kv.first)
-        {
-          cur=cur->m_left;
-        }
-        else
-        {
-          return true;
-        }
-     }
-     return false;
-  }
 
 private:
 	node* m_root;	//¸ù½áµã
