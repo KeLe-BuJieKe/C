@@ -2,7 +2,7 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #include<iostream>
 using namespace std;
-
+#include<stack>
 
 //Key模型
 template<class K>
@@ -27,7 +27,38 @@ public:
 	{
 
 	}
-
+  ~BSTree()
+	{
+		if (m_root == nullptr)
+		{
+			return;
+		}
+		node* cur = m_root;
+		node* prev = nullptr;
+		stack<node*>s;
+		while (cur != nullptr || !s.empty())
+		{
+			while (cur!= nullptr)	//一直把左结点放进栈中
+			{
+				s.push(cur);
+				cur = cur->m_left;
+			}
+			cur = s.top();
+			s.pop();
+			//cur->m_right==prev 这个判断很重要，防止访问完右结点时，来回横跳
+			if (cur->m_right==nullptr||cur->m_right==prev)
+			{
+				prev = cur;
+				delete cur;
+				cur = nullptr;
+			}
+			else
+			{
+				s.push(cur);
+				cur = cur->m_right;
+			}
+		}
+	}
 	bool insert(const K&key)
 	{
 		if (m_root == nullptr)
