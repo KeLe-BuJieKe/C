@@ -3,7 +3,7 @@
 #include<iostream>
 using namespace std;
 #include<stack>
-
+#include<limits.h>
 //KeyÄ£ÐÍ
 template<class K>
 class BSTreeNode
@@ -140,6 +140,38 @@ public:
 		_Inorder(m_root);
 		cout << endl;
 	}
+  bool _isBSTree(node*& root)
+  {
+    if(root==nullptr)
+    {
+      return true;
+    }
+    stack<node*>st;
+    node*cur=root;
+    int prev=INT_MIN+1;
+    while(!st.empty()||cur!=nullptr)
+    {
+      if(cur!=nullptr)
+      {
+        st.push(cur);
+        cur=cur->m_left;
+      }
+      cur=st.top();
+      st.pop();
+      if(cur->m_key<=prev)
+      {
+        return false;
+      }
+      prev=cur->m_key;
+      cur=cur->m_right;
+    }
+    return true;
+  }
+  
+  bool isBSTree()
+  {
+    return _isBSTree(m_root);
+  }
 
 	bool erase(const K& key)
 	{
