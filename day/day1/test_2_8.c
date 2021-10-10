@@ -1,26 +1,26 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 
 //下面程序的运行结果是：
-//#include<stdio.h>
-//int main()
-//{
-//	int i, j, a = 0;
-//	for (i = 0; i < 2; i++)
-//	{
-//		for (j = 0; j < 4; j++)
-//		{
-//			if (j % 2)
-//			{
-//				break;
-//			}
-//			a++;
-//		}
-//		a++;
-//	}
-//	printf("%d\n", a);				//--------4
-//	system("pause");
-//	return 0;
-//}
+#include<stdio.h>
+int main()
+{
+	int i, j, a = 0;
+	for (i = 0; i < 2; i++)
+	{
+		for (j = 0; j < 4; j++)
+		{
+			if (j % 2)
+			{
+				break;
+			}
+			a++;
+		}
+		a++;
+	}
+	printf("%d\n", a);				//--------4
+	system("pause");
+	return 0;
+}
 
 
 /*算法题*/
