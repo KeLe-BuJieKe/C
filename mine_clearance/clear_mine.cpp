@@ -140,3 +140,4 @@ void find_mine(char mine[ROWS][COLS], char show[ROWS][COLS], int row, int col)
 		printf("¹§Ï²Äú»ñÊ¤ÁË£¡\n");
 	}
 }
+
