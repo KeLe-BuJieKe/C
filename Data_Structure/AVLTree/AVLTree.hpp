@@ -1,5 +1,6 @@
 #pragma once
 #include<iostream>
+#include<stack>
 #include<algorithm>
 using namespace std;
 
@@ -27,7 +28,71 @@ class AVLTree
 public:
 	AVLTree():m_root(nullptr)
 	{}
-	//~AVLTree();
+
+	AVLTree(const AVLTree<K,V>& obj)
+	{
+		m_root = copy(obj.m_root,nullptr);
+	}
+
+	AVLTree<K,V>& operator=(const AVLTree<K,V>& obj)
+	{
+		if (this != &obj)
+		{
+			AVLTree<K,V>temp = obj;	//调用拷贝构造
+			std::swap(temp.m_root, this->m_root);
+		}
+		return *this;
+	}
+
+	node* copy( node* root,node*parent) //递归利用中序来做深拷贝
+	{
+		if (root == nullptr)
+		{
+			return nullptr;
+		}
+		node* copyNode = new node(root->m_kv);
+		copyNode->m_parent = parent;
+		copyNode->m_left = copy(root->m_left,root);
+		copyNode->m_right = copy(root->m_right,root);
+		return copyNode;
+	}
+
+	~AVLTree() //利用后序来释放结点
+	{
+		if (m_root == nullptr)
+		{
+			return;
+		}
+		node* cur = m_root;
+		node* prev = nullptr;
+		stack<node*>s;
+		while (cur != nullptr || !s.empty())
+		{
+			while (cur != nullptr)	//一直把左结点放进栈中
+			{
+				s.push(cur);
+				cur = cur->m_left;
+			}
+			cur = s.top();
+			s.pop();
+			//cur->m_right==prev 这个判断很重要，防止访问完右结点时，来回横跳
+			if (cur->m_right == nullptr || cur->m_right == prev)
+			{
+				prev = cur;
+				cur->m_bf = 0;
+				cur->m_left = nullptr;
+				cur->m_parent = nullptr;
+				cur->m_right = nullptr;
+				delete cur;
+				cur = nullptr;
+			}
+			else
+			{
+				s.push(cur);
+				cur = cur->m_right;
+			}
+		}
+	}
 
 	//传进来的是不平衡的结点的指针
 	void RotateL(node* parent)	//左旋
@@ -161,13 +226,19 @@ public:
 			subR->m_bf = 0;
 		}
 	}
+	V& operator[](const K& key)
+	{
+		pair<node*, bool>ret = insert(make_pair(key, V()));
+		return ret.first->m_kv.second;
+	}
 
-	bool insert(const pair<K, V>& kv)
+
+	pair<node*,bool> insert(const pair<K, V>& kv)
 	{
 		if (m_root == nullptr)		//1、如果平衡二叉树为空时，直接再我们的根结点指针创建一个结点
 		{
 			this->m_root = new node(kv);
-			return true;
+			return make_pair(m_root,true);
 		}
 		else
 		{
@@ -188,14 +259,15 @@ public:
 				}
 				else
 				{
-					return false;
+					return make_pair(cur,false);
 				}
 			}
 			//这里的parent不会造成空指针崩溃的情况
 			//当头指针就与我们插入的元素相同时，在上面则会直接return false，不会来到这一步
 			//到了这里判断我们要插入的值是比我们的parent值谁的大
 			//如果比我的key值大，则创建一个新的结点插入到parent右边。否则插入到parent左边。
-			cur = new node(kv);
+			node*newnode = new node(kv);
+			cur = newnode;
 			if (parent->m_kv.first < kv.first)
 			{
 				parent->m_right = cur;
@@ -264,9 +336,8 @@ public:
 				}
 
 			}
-
+			return make_pair(newnode, true);
 		}
-		return true;
 	}
 	int depth(node*& root) 
 	{
@@ -315,32 +386,6 @@ public:
 		_Inorder(m_root);
 		cout << endl;
 	}
-    bool find(const pair<K,V>&kv )
-    {
-       if(m_root==nullptr)
-       {
-          return false;
-       }
-
-       node*cur=m_root;
-       while(cur!=nullptr)
-       {
-          if(cur->m_kv.first<kv.first)
-          {
-            cur=cur->m_right;
-          }
-          else if(cur->m_kv.first>kv.first)
-          {
-            cur=cur->m_left;
-          }
-          else
-          {
-            return true;
-          }
-       }
-       return false;
-     }
-
 private:
 	node* m_root;	//根结点
 };
