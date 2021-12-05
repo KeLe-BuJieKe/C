@@ -143,7 +143,7 @@ public:
 
 		if (bf == 1)
 		{
-			parent->m_bf =0;
+			parent->m_bf = 0;
 			subL->m_bf = -1;
 			subLR->m_bf = 0;
 		}
@@ -199,33 +199,33 @@ public:
 		subL->m_bf = parent->m_bf = 0;	//更新平衡因子
 	}
 
-	void RotateRL(node* parent)
-	{
-		node* subR = parent->m_right;
-		node* subRL = subR->m_left;
-		int bf = subRL->m_bf;
+		void RotateRL(node* parent)
+		{
+			node* subR = parent->m_right;
+			node* subRL = subR->m_left;
+			int bf = subRL->m_bf;
 
-		RotateR(subR);
-		RotateL(parent);
-		if (bf == 1)
-		{
-			parent->m_bf = -1;
-			subRL->m_bf = 0;
-			subR->m_bf = 0;
+			RotateR(subR);
+			RotateL(parent);
+			if (bf == 1)
+			{
+				parent->m_bf = -1;
+				subRL->m_bf = 0;
+				subR->m_bf = 0;
+			}
+			else if (bf == -1)
+			{
+				parent->m_bf = 0;
+				subRL->m_bf = 0;
+				subR->m_bf = 1;
+			}
+			else if (bf == 0)
+			{
+				parent->m_bf = 0;
+				subRL->m_bf = 0;
+				subR->m_bf = 0;
+			}
 		}
-		else if (bf == -1)
-		{
-			parent->m_bf = 0;
-			subRL->m_bf = 0;
-			subR->m_bf = 1;
-		}
-		else if (bf == 0)
-		{
-			parent->m_bf = 0;
-			subRL->m_bf = 0;
-			subR->m_bf = 0;
-		}
-	}
 	V& operator[](const K& key)
 	{
 		pair<node*, bool>ret = insert(make_pair(key, V()));
@@ -384,8 +384,354 @@ public:
 	void Inorder() 
 	{
 		_Inorder(m_root);
-		cout << endl;
+		//cout << endl;
 	}
+
+	bool Erase(const K& key)
+	{
+		if (m_root == nullptr)
+		{
+			return false;
+		}
+		else
+		{
+			node* parent = nullptr;
+			node* cur = m_root;
+			node* delParent = nullptr;
+			node* delNode = nullptr;
+			while (cur != nullptr) //找删除的结点的位置
+			{
+				if (cur->m_kv.first < key)
+				{
+					parent = cur;
+					cur = cur->m_right;
+				}
+				else if(cur->m_kv.first > key)
+				{
+					parent = cur;
+					cur = cur->m_left;
+				}
+				else
+				{
+					//找到了结点的情况
+					if (cur->m_left == nullptr)
+					{
+						if (cur == m_root)
+						{
+							m_root = m_root->m_right;
+							if (m_root != nullptr) //这里是判断当左右都为空的时候，nullptr奔溃
+							{
+								m_root->m_parent = nullptr;
+							}
+							delete cur;
+							return true;
+						}
+						else
+						{
+							delParent = parent;
+							delNode = cur;
+						}
+					}
+					else if (cur->m_right == nullptr)
+					{
+						if (cur == m_root)
+						{
+							m_root = cur->m_left;
+							if (m_root != nullptr)
+							{
+								m_root->m_parent = nullptr;
+							}
+							delete cur;
+							return true;
+						}
+						else
+						{
+							delParent = parent;
+							delNode = cur;
+						}
+					}
+					else
+					{
+						node* leftMinParent = cur;
+						node* leftMin = cur->m_right;
+						while (leftMin->m_left != nullptr) //找右半边的最左结点，为右边最小值
+						{
+							leftMinParent = leftMin;
+							leftMin = leftMin->m_left;
+						}
+						cur->m_kv.first = leftMin->m_kv.first;
+						cur->m_kv.second = leftMin->m_kv.second;
+						delParent = leftMinParent;
+						delNode = leftMin;
+					}
+					break;
+				}
+			}
+
+			if (cur == nullptr) //没找到的情况
+			{
+				return false;
+			}
+
+			//更新平衡因子
+			cur = delNode;
+			parent = delParent;
+			while (parent != nullptr) //最坏一路更新到根结点
+			{
+				if (cur == parent->m_left)  //判断删除的是在父亲的那一边，然后更新平衡因子
+				{
+					++parent->m_bf;
+				}
+				else if(cur == parent->m_right)
+				{
+					--parent->m_bf;
+				}
+
+				if (parent->m_bf == 1 || parent->m_bf == -1) //最坏一路更新到根结点
+				{
+					break;
+				}
+				else if (parent->m_bf == 0) //需要继续往上更新平衡因子
+				{
+					cur = parent;  //树的高度变化，会影响其父结点的平衡因子，需要继续往上更新平衡因子
+					parent = parent->m_parent;
+				}
+				else if (parent->m_bf == 2 || parent->m_bf == -2) //需要进行旋转
+				{
+					if (parent->m_bf == 2) //直线的情况
+					{
+						if (parent->m_right->m_bf == 1)
+						{
+							node* temp = parent->m_right; //保存当前根结点所在的位置
+							RotateL(parent);
+							parent = temp;
+						}
+						else if (parent->m_right->m_bf == -1) //折线
+						{
+							node* temp = parent->m_right->m_left;
+							RotateRL(parent);
+							parent = temp;
+						}
+						else if (parent->m_right->m_bf == 0) //RotateL(parent);
+						{
+							node* parentRight = parent->m_right;
+							RotateL(parent);
+							parent->m_bf = 1;
+							parentRight->m_bf = -1;
+							break;
+							//node* grandfather = parent->m_parent;
+							//node* parentRight = parent->m_right;
+							//if (grandfather == nullptr) //此时parent为根
+							//{
+							//	parent->m_right = parentRight->m_left;
+							//	parentRight->m_left->m_parent = parent;
+
+							//	parent->m_parent = parentRight;
+							//	parentRight->m_left = parent;
+
+							//	parentRight->m_parent = nullptr;
+							//	m_root = parentRight;
+							//	parent->m_left = nullptr;
+
+							//	//RotateL(parent);
+							//	parentRight->m_bf = -1;
+							//	parent->m_bf = 1;
+							//}
+							//else
+							//{
+							//	if (parent == grandfather->m_right)
+							//	{
+							//		grandfather->m_right = parentRight;
+							//		parentRight->m_parent = grandfather;
+
+							//		parent->m_right = parentRight->m_left;
+							//		parentRight->m_left->m_parent = parent;
+
+							//		
+							//		parent->m_parent = parentRight;
+							//		parentRight->m_left = parent;
+							//		parent->m_left = nullptr;
+
+							//		parentRight->m_bf = -1;
+							//		parent->m_bf = 1;
+							//		//RotateL(parent);
+							//	}
+							//	else
+							//	{
+							//		grandfather->m_left = parentRight;
+							//		parentRight->m_parent = grandfather;
+
+							//		parent->m_right = parentRight->m_left;
+							//		parentRight->m_left->m_parent = parent;
+
+							//		parent->m_parent = parentRight;
+							//		parentRight->m_left = parent;
+							//		parent->m_left = nullptr;
+							//		parentRight->m_bf = -1;
+							//		parent->m_bf = 1;
+							//		//RotateL(parent);
+							//	}
+							//}
+							//break;
+						}
+					}
+					else if(parent->m_bf == -2)
+					{
+						if (parent->m_left->m_bf == -1)
+						{
+							node* temp = parent->m_left;
+							RotateR(parent);
+							parent = temp;
+						}
+						else if (parent->m_left->m_bf == 1)
+						{
+							node* temp = parent->m_left->m_right;
+							RotateLR(parent);
+							parent = temp;
+						}
+						else if (parent->m_left->m_bf == 0)  //RotateR(parent);
+						{
+							node* parentLeft = parent->m_left;
+							RotateR(parent);
+							parent->m_bf = -1;
+							parentLeft->m_bf = 1;
+							break;
+
+							//node* grandfather = parent->m_parent;
+							//node* parentLeft = parent->m_left;
+							//if (grandfather == nullptr)  //此时parent为根
+							//{
+							//	parent->m_left = parentLeft->m_right;
+							//	parentLeft->m_right->m_parent = parent;
+
+							//	parentLeft->m_right = parent;
+							//	parent->m_parent = parentLeft;
+
+							//	parentLeft->m_parent = nullptr;
+							//	m_root = parentLeft;
+							//	parent->m_right = nullptr;
+
+							//	parent->m_bf = -1;
+							//	parentLeft->m_bf = 1;
+							//}
+							//else
+							//{
+							//	//RotateR(parent);
+							//	if (parent == grandfather->m_right) //父亲结点在祖父结点的右边
+							//	{
+							//		grandfather->m_right = parentLeft;
+							//		parentLeft->m_parent = grandfather;
+
+							//		parent->m_left = parentLeft->m_right;
+							//		parentLeft->m_right->m_parent = parent;
+
+							//		parentLeft->m_right = parent;
+							//		parent->m_parent = parentLeft;
+							//		parent->m_right = nullptr;
+
+							//		parent->m_bf = -1;
+							//		parentLeft->m_bf = 1;
+							//	}
+							//	else //RotateR(parent);
+							//	{
+							//		grandfather->m_left = parentLeft;
+							//		parentLeft->m_parent = grandfather;
+
+							//		parent->m_left = parentLeft->m_right;
+							//		parentLeft->m_right->m_parent = parent;
+
+							//		parentLeft->m_right = parent;
+							//		parent->m_parent = parentLeft;
+							//		parent->m_right = nullptr;
+							//		parent->m_bf = -1;
+							//		parentLeft->m_bf = 1;
+							//	}
+							//}
+							//break;
+						}
+					}
+					//树的高度变化，会影响其上一层父结点父结点的平衡因子，需要继续往上更新平衡因子
+					cur = parent;
+					parent = parent->m_parent;
+				}
+			}
+
+
+			if (delNode->m_left == nullptr) //实际删除结点的左子树为空  替换法删除与部分左为空情况的删除
+			{
+				if (delNode == delParent->m_left)  //实际删除结点是其父结点的左孩子
+				{
+					delParent->m_left = delNode->m_right;
+					if (delNode->m_right != nullptr)
+					{
+						delNode->m_right->m_parent = delParent;
+					}
+				}
+				else if(delNode == delParent->m_right)
+				{
+					delParent->m_right = delNode->m_right;
+					if (delNode->m_right != nullptr)
+					{
+						delNode->m_right->m_parent = delParent;
+					}
+				}
+			}
+			else if (delNode->m_right == nullptr)
+			{
+				if (delNode == delParent->m_left)  //实际删除结点是其父结点的左孩子
+				{
+					delParent->m_left = delNode->m_left;
+					if (delNode->m_left != nullptr)
+					{
+						delNode->m_left->m_parent = delParent;
+					}
+				}
+				else if (delNode == delParent->m_right)
+				{
+					delParent->m_right = delNode->m_left;
+					if (delNode->m_left != nullptr)
+					{
+						delNode->m_left->m_parent = delParent;
+					}
+				}
+			}
+			delete delNode;
+			return true;
+		}
+	}
+	//查找函数
+	node* Find(const K& key)
+	{
+		node* cur = m_root;
+		while (cur)
+		{
+			if (key < cur->m_kv.first) //key值小于该结点的值
+			{
+				cur = cur->m_left; //在该结点的左子树当中查找
+			}
+			else if (key > cur->m_kv.first) //key值大于该结点的值
+			{
+				cur = cur->m_right; //在该结点的右子树当中查找
+			}
+			else //找到了目标结点
+			{
+				return cur; //返回该结点
+			}
+		}
+		return nullptr; //查找失败
+	}
+	//修改函数
+	bool Modify(const K& key, const V& val)
+	{
+		node* ret = Find(key);
+		if (ret == nullptr) //未找到指定key值的结点
+		{
+			return false;
+		}
+		ret->m_kv.second = val; //修改结点的value
+		return true;
+	}
+
 private:
 	node* m_root;	//根结点
 };
