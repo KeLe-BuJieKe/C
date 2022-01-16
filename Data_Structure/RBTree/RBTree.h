@@ -1,5 +1,6 @@
 #pragma once
 #include<iostream>
+#include<stack>
 using namespace std;
 
 //节点的颜色
@@ -34,6 +35,70 @@ class RBTree
 public:
 	RBTree() :m_root(nullptr)
 	{}
+	RBTree(const RBTree<K, V>& obj)
+	{
+		m_root = copy(obj.m_root, nullptr);
+	}
+
+	RBTree<K, V>& operator=(const RBTree<K, V>& obj)
+	{
+		if (this != &obj)
+		{
+			RBTree<K, V>temp = obj;	//调用拷贝构造
+			std::swap(temp.m_root, this->m_root);
+		}
+		return *this;
+	}
+
+	Node* copy(Node* root, Node* parent) //递归利用中序来做深拷贝
+	{
+		if (root == nullptr)
+		{
+			return nullptr;
+		}
+		Node* copyNode = new Node(root->m_kv);
+		copyNode->m_parent = parent;
+		copyNode->m_left = copy(root->m_left, root);
+		copyNode->m_right = copy(root->m_right, root);
+		return copyNode;
+	}
+
+	~RBTree() //利用后序来释放结点
+	{
+		if (m_root == nullptr)
+		{
+			return;
+		}
+		Node* cur = m_root;
+		Node* prev = nullptr;
+		stack<Node*>s;
+		while (cur != nullptr || !s.empty())
+		{
+			while (cur != nullptr)	//一直把左结点放进栈中
+			{
+				s.push(cur);
+				cur = cur->m_left;
+			}
+			cur = s.top();
+			s.pop();
+			//cur->m_right==prev 这个判断很重要，防止访问完右结点时，来回横跳
+			if (cur->m_right == nullptr || cur->m_right == prev)
+			{
+				prev = cur;
+				cur->m_left = nullptr;
+				cur->m_parent = nullptr;
+				cur->m_right = nullptr;
+				delete cur;
+				cur = nullptr;
+			}
+			else
+			{
+				s.push(cur);
+				cur = cur->m_right;
+			}
+		}
+	}
+
 	//传进来的是不平衡的结点的指针
 	void RotateL(Node* parent)	//左旋
 	{
@@ -109,134 +174,243 @@ public:
 	}
 
 
-	bool insert(const pair<K, V>& kv)
+	//bool insert(const pair<K, V>& kv)
+	//{
+	//	if (m_root == nullptr)
+	//	{
+	//		m_root = new Node(kv);
+	//		m_root->m_col = Color::BLACK;	//根节点的颜色必须为黑
+	//		return true;
+	//	}
+	//	else
+	//	{
+	//		Node* parent = nullptr;	
+	//		Node* cur = m_root;
+	//		while (cur!=nullptr)
+	//		{
+	//			if (cur->m_kv.first < kv.first)
+	//			{
+	//				parent = cur;
+	//				cur = cur->m_right;
+	//			}
+	//			else if (cur->m_kv.first > kv.first)
+	//			{
+	//				parent = cur;
+	//				cur = cur->m_left;
+	//			}
+	//			else
+	//			{
+	//				return false;
+	//			}
+	//		}
+
+	//		cur = new Node(kv);	//默认构造函数颜色初始化为RED了
+	//		if (parent->m_kv.first > kv.first)  //判断新插入的节点是要插入到我们的左边还是右边，并用父节点的指针连接起来
+	//		{
+	//			parent->m_left = cur;
+	//			cur->m_parent = parent;
+	//		}
+	//		else
+	//		{
+	//			parent->m_right = cur;
+	//			cur->m_parent = parent;
+	//		}
+
+
+	//		while (parent != nullptr && parent->m_col == Color::RED)	//因为我们插入的颜色是红色，当我们的父亲节点的颜色也为红时，要一直向上调整颜色
+	//		{
+	//			//可能有人会有疑惑，这里这个祖父节点为什么不判断它为空指针的情况，并且如果是空指针，下面访问是不是会造成空指针访问崩溃呢？
+	//			//其实不然，如果我们的节点中插入前只有头节点一个，那么它就不会进入到这个循环体里
+	//			//因为根节点的颜色为 黑
+	//			//如果此时这个红黑树中有两个节点，第二个节点不管它在根节点的左边还是右边。
+	//			//此时那么我们假设另外一个节点在根结点的左边
+	//			//那么如果我们要插入的元素是插入到根结点的右边，那么此时我们和上面同样的情况，进步来这个循环体里
+	//			//如果插入到第二个节点的下面，那么此时虽然parent的颜色为空，但是我们的 祖父节点(grandfather)并不为空
+	//			//综上所诉所以这里不需要判断它是否为空指针访问情况，不会造成空指针崩溃现象。
+	//			Node* grandfather=parent->m_parent;	//祖父
+
+	//			//要变成什么颜色关键看叔叔uncle，所以我们找到叔叔的位置在左还是右
+	//			if (grandfather->m_left == parent)  //判断
+	//			{
+	//				Node* uncle = grandfather->m_right;
+	//				//第一种情况：叔叔存在 且为 红
+	//				if (uncle != nullptr && uncle->m_col == Color::RED)
+	//				{
+	//					grandfather->m_col = Color::RED;
+	//					parent->m_col = uncle->m_col = Color::BLACK;
+
+	//					//为什么让cur=grandfather，而不是parent呢？
+	//					//这是因为此时这种情况，parent的颜色变成黑色，黑色时，这个节点就不需要判断了。
+	//					//如果从parent开始，就不能继续往上更新了。会直接终止循环。
+	//					//而是从我们刚刚变成红色的grandfather节点开始，有可能此时grandfather节点变为红
+	//					//导致上层每条路径的黑色节点数目不同发生错误。
+	//					cur = grandfather;			//继续往上更新颜色
+	//					parent = cur->m_parent;
+	//				}
+	//				//第二 第三种情况：叔叔不存在 或 叔叔存在且为 黑
+	//				else
+	//				{
+	//					//双旋 -> 单旋
+	//					if (parent->m_right == cur)	//判断路径是否是折线，如果是折线就需要先左旋，在右旋
+	//					{						//左旋完成后，将parent指针与cur指针的指向更改，因为cur与parent的相对次序反了，不然会出现错误
+	//						RotateL(parent);
+	//						std::swap(parent, cur);
+	//					}
+
+	//					//这里有可能是第三种情况左旋转换而来
+	//					RotateR(grandfather);
+	//					grandfather->m_col = Color::RED;
+	//					parent->m_col = Color::BLACK;
+
+	//					//因为不管你上面是 红色还是黑色，之后都不会影响其每条路径的黑色节点个数
+	//					break;	//可以写也可以不写
+	//				}
+	//			}
+	//			else
+	//			{
+	//				//此时uncle（叔叔）节点在我们的左边
+	//				Node* uncle = grandfather->m_left;
+	//				//第一种情况：叔叔存在 且为 红
+	//				if (uncle != nullptr && uncle->m_col == Color::RED)
+	//				{
+	//					grandfather->m_col = Color::RED;
+	//					parent->m_col = uncle->m_col = Color::BLACK;
+
+	//					cur = grandfather;			//继续往上更新颜色
+	//					parent = cur->m_parent;
+	//				}
+	//				//第二 第三种情况：叔叔不存在 或 叔叔存在且为 黑
+	//				else
+	//				{
+	//					//双旋 -> 单旋
+	//					if (parent->m_left == cur)	//判断路径是否是折线，如果是折线就需要先右旋，在左旋
+	//					{						//右旋完成后，将parent指针与cur指针的指向更改，因为cur与parent的相对次序反了，不然会出现错误
+	//						RotateR(parent);
+	//						std::swap(parent, cur);
+	//					}
+
+	//					//这里有可能是第三种情况右旋转换而来
+	//					RotateL(grandfather);
+	//					grandfather->m_col = Color::RED;
+	//					parent->m_col = Color::BLACK;
+
+	//					//因为不管你上面是 红色还是黑色，之后都不会影响其每条路径的黑色节点个数
+	//					break;	//可以写也可以不写
+	//				}
+	//			}
+	//		}
+	//	}
+	//	m_root->m_col = Color::BLACK;	//始终让头节点的颜色为黑
+	//	return true;
+	//}
+
+	//插入看叔叔
+	std::pair<Node*, bool> insert(const std::pair<K, V>& kv)
 	{
 		if (m_root == nullptr)
 		{
 			m_root = new Node(kv);
-			m_root->m_col = Color::BLACK;	//根节点的颜色必须为黑
-			return true;
+			m_root->m_col = Color::BLACK;
+			return std::make_pair(m_root, true);
 		}
-		else
-		{
-			Node* parent = nullptr;	
-			Node* cur = m_root;
-			while (cur!=nullptr)
-			{
-				if (cur->m_kv.first < kv.first)
-				{
-					parent = cur;
-					cur = cur->m_right;
-				}
-				else if (cur->m_kv.first > kv.first)
-				{
-					parent = cur;
-					cur = cur->m_left;
-				}
-				else
-				{
-					return false;
-				}
-			}
 
-			cur = new Node(kv);	//默认构造函数颜色初始化为RED了
-			if (parent->m_kv.first > kv.first)  //判断新插入的节点是要插入到我们的左边还是右边，并用父节点的指针连接起来
+		Node* parent = nullptr;
+		Node* cur = m_root;
+		while (cur != nullptr)
+		{
+			if (cur->m_kv.first > kv.first)
 			{
-				parent->m_left = cur;
-				cur->m_parent = parent;
+				parent = cur;
+				cur = cur->m_left;
+			}
+			else if (cur->m_kv.second < kv.first)
+			{
+				parent = cur;
+				cur = cur->m_right;
 			}
 			else
 			{
-				parent->m_right = cur;
-				cur->m_parent = parent;
+				return std::make_pair(cur, false);
 			}
+		}
 
+		Node* newNode = new Node(kv);
+		if (parent->m_kv.first > kv.first)
+		{
+			parent->m_left = newNode;
+			newNode->m_parent = parent;
+		}
+		else
+		{
+			parent->m_right = newNode;
+			newNode->m_parent = parent;
+		}
+		cur = newNode;
 
-			while (parent != nullptr && parent->m_col == Color::RED)	//因为我们插入的颜色是红色，当我们的父亲节点的颜色也为红时，要一直向上调整颜色
+		while (parent != nullptr && parent->m_col == Color::RED)
+		{
+			Node* grandFather = parent->m_parent;
+			if (parent == grandFather->m_left) //情况一：叔叔存在且为红
 			{
-				//可能有人会有疑惑，这里这个祖父节点为什么不判断它为空指针的情况，并且如果是空指针，下面访问是不是会造成空指针访问崩溃呢？
-				//其实不然，如果我们的节点中插入前只有头节点一个，那么它就不会进入到这个循环体里
-				//因为根节点的颜色为 黑
-				//如果此时这个红黑树中有两个节点，第二个节点不管它在根节点的左边还是右边。
-				//此时那么我们假设另外一个节点在根结点的左边
-				//那么如果我们要插入的元素是插入到根结点的右边，那么此时我们和上面同样的情况，进步来这个循环体里
-				//如果插入到第二个节点的下面，那么此时虽然parent的颜色为空，但是我们的 祖父节点(grandfather)并不为空
-				//综上所诉所以这里不需要判断它是否为空指针访问情况，不会造成空指针崩溃现象。
-				Node* grandfather=parent->m_parent;	//祖父
-
-				//要变成什么颜色关键看叔叔uncle，所以我们找到叔叔的位置在左还是右
-				if (grandfather->m_left == parent)  //判断
+				Node* uncle = grandFather->m_right;
+				if (uncle != nullptr && uncle->m_col == Color::RED)
 				{
-					Node* uncle = grandfather->m_right;
-					//第一种情况：叔叔存在 且为 红
-					if (uncle != nullptr && uncle->m_col == Color::RED)
-					{
-						grandfather->m_col = Color::RED;
-						parent->m_col = uncle->m_col = Color::BLACK;
-
-						//为什么让cur=grandfather，而不是parent呢？
-						//这是因为此时这种情况，parent的颜色变成黑色，黑色时，这个节点就不需要判断了。
-						//如果从parent开始，就不能继续往上更新了。会直接终止循环。
-						//而是从我们刚刚变成红色的grandfather节点开始，有可能此时grandfather节点变为红
-						//导致上层每条路径的黑色节点数目不同发生错误。
-						cur = grandfather;			//继续往上更新颜色
-						parent = cur->m_parent;
-					}
-					//第二 第三种情况：叔叔不存在 或 叔叔存在且为 黑
-					else
-					{
-						//双旋 -> 单旋
-						if (parent->m_right == cur)	//判断路径是否是折线，如果是折线就需要先左旋，在右旋
-						{						//左旋完成后，将parent指针与cur指针的指向更改，因为cur与parent的相对次序反了，不然会出现错误
-							RotateL(parent);
-							std::swap(parent, cur);
-						}
-
-						//这里有可能是第三种情况左旋转换而来
-						RotateR(grandfather);
-						grandfather->m_col = Color::RED;
-						parent->m_col = Color::BLACK;
-
-						//因为不管你上面是 红色还是黑色，之后都不会影响其每条路径的黑色节点个数
-						break;	//可以写也可以不写
-					}
+					uncle->m_col = parent->m_col = Color::BLACK;
+					grandFather->m_col = Color::RED;
+					cur = grandFather;
+					parent = cur->m_parent;
 				}
 				else
 				{
-					//此时uncle（叔叔）节点在我们的左边
-					Node* uncle = grandfather->m_left;
-					//第一种情况：叔叔存在 且为 红
-					if (uncle != nullptr && uncle->m_col == Color::RED)
+					if (cur == parent->m_left) //情况二：叔叔存在或者不存
 					{
-						grandfather->m_col = Color::RED;
-						parent->m_col = uncle->m_col = Color::BLACK;
-
-						cur = grandfather;			//继续往上更新颜色
-						parent = cur->m_parent;
+						RotateR(grandFather);
+						grandFather->m_col = Color::RED;
+						parent->m_col = Color::BLACK;
 					}
-					//第二 第三种情况：叔叔不存在 或 叔叔存在且为 黑
 					else
 					{
-						//双旋 -> 单旋
-						if (parent->m_left == cur)	//判断路径是否是折线，如果是折线就需要先右旋，在左旋
-						{						//右旋完成后，将parent指针与cur指针的指向更改，因为cur与parent的相对次序反了，不然会出现错误
-							RotateR(parent);
-							std::swap(parent, cur);
-						}
-
-						//这里有可能是第三种情况右旋转换而来
-						RotateL(grandfather);
-						grandfather->m_col = Color::RED;
-						parent->m_col = Color::BLACK;
-
-						//因为不管你上面是 红色还是黑色，之后都不会影响其每条路径的黑色节点个数
-						break;	//可以写也可以不写
+						RotateL(parent);
+						RotateR(grandFather);
+						cur->m_col = Color::BLACK;
+						grandFather->m_col = Color::RED;
 					}
+					break;
+				}
+
+			}
+			else
+			{
+				Node* uncle = grandFather->m_left;
+				if (uncle != nullptr && uncle->m_col == Color::RED)
+				{
+					uncle->m_col = parent->m_col = Color::BLACK;
+					grandFather->m_col = Color::RED;
+					cur = grandFather;
+					parent = cur->m_parent;
+				}
+				else
+				{
+					if (cur == parent->m_left)
+					{
+						RotateR(parent);
+						RotateL(grandFather);
+						grandFather->m_col = Color::RED;
+						cur->m_col = Color::BLACK;
+					}
+					else
+					{
+						RotateL(grandFather);
+						grandFather->m_col = Color::RED;
+						parent->m_col = Color::BLACK;
+					}
+
+					break;
 				}
 			}
 		}
-		m_root->m_col = Color::BLACK;	//始终让头节点的颜色为黑
-		return true;
+		m_root->m_col = Color::BLACK;
+		return std::make_pair(newNode, true);
 	}
 
 	//删除函数 删除看兄弟
@@ -515,62 +689,56 @@ public:
 		cout << endl;
 	}
 
-	bool IsValidRBTree()
+	//判断是否为红黑树
+	bool IsRBTree()
 	{
-		Node* pRoot = m_root;
-		// 空树也是红黑树
-		if (nullptr == pRoot)
+		if (m_root == nullptr) //空树是红黑树
 		{
 			return true;
 		}
-		// 检测根节点是否满足情况
-		if (Color::BLACK != pRoot->m_col)
+		if (m_root->m_col == Color::RED)
 		{
-			cout << "违反红黑树性质二：根节点必须为黑色" << endl;
+			cout << "error：根结点为红色" << endl;
 			return false;
 		}
-		// 获取任意一条路径中黑色节点的个数
-		size_t blackCount = 0;
-		Node* pCur = pRoot;
-		while (pCur!=nullptr)
+
+		//找最左路径作为黑色结点数目的参考值
+		Node* cur = m_root;
+		int BlackCount = 0;
+		while (cur)
 		{
-			if (Color::BLACK == pCur->m_col)
-			{
-				blackCount++;
-			}
-			pCur = pCur->m_left;
+			if (cur->m_col == Color::BLACK)
+				BlackCount++;
+			cur = cur->m_left;
 		}
-		// 检测是否满足红黑树的性质，k用来记录路径中黑色节点的个数
-		size_t k = 0;
-		return _IsValidRBTree(pRoot, k, blackCount);
+
+		int count = 0;
+		return _IsRBTree(m_root, count, BlackCount);
 	}
 
-	bool _IsValidRBTree(Node* pRoot, size_t k, const size_t blackCount)
+	//判断是否为红黑树的子函数
+	bool _IsRBTree(Node* root, int count, int BlackCount)
 	{
-		//走到nullptr之后，判断k和black是否相等
-		if (nullptr == pRoot)
+		if (root == nullptr) //该路径已经走完了
 		{
-			if (k != blackCount)
+			if (count != BlackCount)
 			{
-				cout << "违反性质四：每条路径中黑色节点的个数必须相同" << endl;
+				cout << "error：黑色结点的数目不相等" << endl;
 				return false;
 			}
 			return true;
 		}
-		// 统计黑色节点的个数
-		if (Color::BLACK == pRoot->m_col)
+
+		if (root->m_col == Color::RED && root->m_parent->m_col == Color::RED)
 		{
-			k++;
-		}
-		// 检测当前节点与其双亲是否都为红色
-		Node* pParent = pRoot->m_parent;
-		if (pParent && Color::RED == pParent->m_col && Color::RED == pRoot->m_col)
-		{
-			cout << "违反性质三：没有连在一起的红色节点" << endl;
+			cout << "error：存在连续的红色结点" << endl;
 			return false;
 		}
-		return _IsValidRBTree(pRoot->m_left, k, blackCount) &&
-			_IsValidRBTree(pRoot->m_right, k, blackCount);
+		if (root->m_col == Color::BLACK)
+		{
+			count++;
+		}
+		return _IsRBTree(root->m_left, count, BlackCount) && _IsRBTree(root->m_right, count, BlackCount);
 	}
 
 	Node* find(const K&kv) 
