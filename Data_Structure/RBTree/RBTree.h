@@ -58,8 +58,8 @@ public:
 		}
 		Node* copyNode = new Node(root->m_kv);
 		copyNode->m_parent = parent;
-		copyNode->m_left = copy(root->m_left, root);
-		copyNode->m_right = copy(root->m_right, root);
+		copyNode->m_left = copy(root->m_left, copyNode);
+		copyNode->m_right = copy(root->m_right, copyNode);
 		return copyNode;
 	}
 
